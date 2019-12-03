@@ -20,11 +20,11 @@
 
 class Juice_choice
   def choice
+    self.juice_list
     puts "投入金額:#{@slot_money}円"
-    #ここeach
-    puts "0: #{juice.name[0]}:#{juice.price[0]}円"
-    puts "1: #{juice.name[1]}:#{juice.price[1]}円"
-    puts "2: #{juice.name[2]}:#{juice.price[2]}円"
+    for i in 0..2 do 
+      puts "#{i}: #{@juice.name[i]}:#{@juice.price[i]}円"
+    end
     puts "3: やっぱり買わない"
     puts 
     puts "数字を入力してください"
@@ -39,6 +39,17 @@ class Juice_choice
     end
     @choice_juice = choice_number.to_i
   end
+
+  def juice_list
+    puts "購入可能ジュース一覧"
+    for i in 0..2 do
+      if @slot_money >= @juice.price[i] && @juice.number[i] > 0 
+        puts "#{juice.name[i]}が買えます。"
+      elsif @juice.number[i] == 0
+        puts "#{juice.name[i]}の在庫はありません。"
+      end
+    end
+  end
 end
 
 class Buy_sale < Juice_choice
@@ -49,8 +60,9 @@ class Buy_sale < Juice_choice
       @juice.number[@choice_juice] -= 1
       total_sale(@choice_juice)
       return_money
-    elsif @juice.number == 0
-      puts '赤いばってん'
+    elsif @juice.number[@choice_juice] == 0
+      puts '在庫がないよ（笑）'
+      return self.buy_juice
     else 
       puts
       puts ' ---------------------'
@@ -101,7 +113,7 @@ class VendingMachine < Buy_sale
   # 払い戻し操作を行うと、投入金額の総計を釣り銭として出力する。
   def return_money
     # 返すお金の金額を表示する
-    puts @slot_money
+    puts "お釣り#{@slot_money}円"
     # 自動販売機に入っているお金を0円に戻す
     @slot_money = 0
   end
@@ -112,7 +124,7 @@ class Juice
   def initialize
     @name = ["コーラ", "レッドブル", "水"]
     @price = [120,200,100]
-    @number = [5,5,5]
+    @number = [5,5,0]
   end
 
   # def make
@@ -122,5 +134,6 @@ end
 
 vend = VendingMachine.new
 vend.slot_money(100)
-vend.slot_money(50)
+vend.slot_money(10)
+vend.slot_money(10)
 vend.buy_juice
